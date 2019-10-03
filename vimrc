@@ -41,7 +41,7 @@ set laststatus=2
 set autochdir
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-
+noremap <LEADER><CR> :nohlsearch<CR>
 
 "basic save and quit
 map s <nop>
@@ -62,6 +62,9 @@ noremap I 5k
 noremap K 5j
 noremap J 5h
 noremap L 5l
+
+noremap <C-l> $
+noremap <C-j> 0
 
 noremap h i
 noremap H I
@@ -159,23 +162,27 @@ Plug 'fadein/vim-FIGlet'
 
 call plug#end()
 
+let g:airline#extensions#tabline#enabled = 1
 let g:SnazzyTransparent = 1
 color snazzy
 
 " ===
 " === NERDTree
 " ===
-map tt :NERDTreeToggle<CR>
-let NERDTreeMapOpenExpl = ""
-let NERDTreeMapUpdir = ""
-let NERDTreeMapUpdirKeepOpen = "l"
-let NERDTreeMapOpenSplit = ""
-let NERDTreeOpenVSplit = ""
-let NERDTreeMapActivateNode = "i"
-let NERDTreeMapOpenInTab = "o"
-let NERDTreeMapPreview = ""
-let NERDTreeMapCloseDir = "n"
-let NERDTreeMapChangeRoot = "y"
+map o :NERDTreeToggle<CR>
+" move 
+let NERDTreeMapActivateNode = "l"
+let NERDTreeMapCWD = "L"
+let NERDTreeMapUpdirKeepOpen = "J"
+let NERDTreeMapJumpParent = "j"
+let NERDTreeMapJumpFirstChild = "<C-I>"
+let NERDTreeMapJumpNextSibling = "K"
+let NERDTreeMapJumpPrevSibling = "I"
+let NERDTreeMapJumpLastChild = "<C-K>"
+" open way
+let NERDTreeMapOpenSplit = "s"
+
+
 
 
 " ==
@@ -193,122 +200,122 @@ let g:NERDTreeIndicatorMapCustom = {
     \ "Unknown"   : "?"
     \ }
 
-
-" ===
-" === You Complete ME
-" ===
-nnoremap gd :YcmCompleter GoToDefinitionElseDeclaration<CR>
-nnoremap g/ :YcmCompleter GetDoc<CR>
-nnoremap gt :YcmCompleter GetType<CR>
-nnoremap gr :YcmCompleter GoToReferences<CR>
-let g:ycm_autoclose_preview_window_after_completion=0
-let g:ycm_autoclose_preview_window_after_insertion=1
-let g:ycm_use_clangd = 0
-let g:ycm_python_interpreter_path = "/bin/python3"
-let g:ycm_python_binary_path = "/bin/python3"
-
-
-" ===
-" === ale
-" ===
-let b:ale_linters = ['pylint']
-let b:ale_fixers = ['autopep8', 'yapf']
-
-
-" ===
-" === Taglist
-" ===
-map <silent> T :TagbarOpenAutoClose<CR>
-
-
-" ===
-" === MarkdownPreview
-" ===
-let g:mkdp_auto_start = 0
-let g:mkdp_auto_close = 1
-let g:mkdp_refresh_slow = 0
-let g:mkdp_command_for_global = 0
-let g:mkdp_open_to_the_world = 0
-let g:mkdp_open_ip = ''
-let g:mkdp_browser = 'chromium'
-let g:mkdp_echo_preview_url = 0
-let g:mkdp_browserfunc = ''
-let g:mkdp_preview_options = {
-    \ 'mkit': {},
-    \ 'katex': {},
-    \ 'uml': {},
-    \ 'maid': {},
-    \ 'disable_sync_scroll': 0,
-    \ 'sync_scroll_type': 'middle',
-    \ 'hide_yaml_meta': 1
-    \ }
-let g:mkdp_markdown_css = ''
-let g:mkdp_highlight_css = ''
-let g:mkdp_port = ''
-let g:mkdp_page_title = '「${name}」'
-
-
-" ===
-" === vim-table-mode
-" ===
-map <LEADER>tm :TableModeToggle<CR>
-
-" ===
-" === Python-syntax
-" ===
-let g:python_highlight_all = 1
-" let g:python_slow_sync = 0
-
-
-" ===
-" === vim-indent-guide
-" ===
-let g:indent_guides_guide_size = 1
-let g:indent_guides_start_level = 2
-let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_color_change_percent = 1
-silent! unmap <LEADER>ig
-autocmd WinEnter * silent! unmap <LEADER>ig
-
-
-" ===
-" === Goyo
-" ===
-map <LEADER>gy :Goyo<CR>
-
-
-" ===
-" === vim-signiture
-" ===
-let g:SignatureMap = {
-        \ 'Leader'             :  "m",
-        \ 'PlaceNextMark'      :  "m,",
-        \ 'ToggleMarkAtLine'   :  "m.",
-        \ 'PurgeMarksAtLine'   :  "dm-",
-        \ 'DeleteMark'         :  "dm",
-        \ 'PurgeMarks'         :  "dm/",
-        \ 'PurgeMarkers'       :  "dm?",
-        \ 'GotoNextLineAlpha'  :  "m<LEADER>",
-        \ 'GotoPrevLineAlpha'  :  "",
-        \ 'GotoNextSpotAlpha'  :  "m<LEADER>",
-        \ 'GotoPrevSpotAlpha'  :  "",
-        \ 'GotoNextLineByPos'  :  "",
-        \ 'GotoPrevLineByPos'  :  "",
-        \ 'GotoNextSpotByPos'  :  "mn",
-        \ 'GotoPrevSpotByPos'  :  "mp",
-        \ 'GotoNextMarker'     :  "",
-        \ 'GotoPrevMarker'     :  "",
-        \ 'GotoNextMarkerAny'  :  "",
-        \ 'GotoPrevMarkerAny'  :  "",
-        \ 'ListLocalMarks'     :  "m/",
-        \ 'ListLocalMarkers'   :  "m?"
-        \ }
-
-
-" ===
-" === Undotree
-" ===
-let g:undotree_DiffAutoOpen = 0
-map L :UndotreeToggle<CR>
-
-
+"
+"" ===
+"" === You Complete ME
+"" ===
+"nnoremap gd :YcmCompleter GoToDefinitionElseDeclaration<CR>
+"nnoremap g/ :YcmCompleter GetDoc<CR>
+"nnoremap gt :YcmCompleter GetType<CR>
+"nnoremap gr :YcmCompleter GoToReferences<CR>
+"let g:ycm_autoclose_preview_window_after_completion=0
+"let g:ycm_autoclose_preview_window_after_insertion=1
+"let g:ycm_use_clangd = 0
+"let g:ycm_python_interpreter_path = "/bin/python3"
+"let g:ycm_python_binary_path = "/bin/python3"
+"
+"
+"" ===
+"" === ale
+"" ===
+"let b:ale_linters = ['pylint']
+"let b:ale_fixers = ['autopep8', 'yapf']
+"
+"
+"" ===
+"" === Taglist
+"" ===
+"map <silent> T :TagbarOpenAutoClose<CR>
+"
+"
+"" ===
+"" === MarkdownPreview
+"" ===
+"let g:mkdp_auto_start = 0
+"let g:mkdp_auto_close = 1
+"let g:mkdp_refresh_slow = 0
+"let g:mkdp_command_for_global = 0
+"let g:mkdp_open_to_the_world = 0
+"let g:mkdp_open_ip = ''
+"let g:mkdp_browser = 'chromium'
+"let g:mkdp_echo_preview_url = 0
+"let g:mkdp_browserfunc = ''
+"let g:mkdp_preview_options = {
+"    \ 'mkit': {},
+"    \ 'katex': {},
+"    \ 'uml': {},
+"    \ 'maid': {},
+"    \ 'disable_sync_scroll': 0,
+"    \ 'sync_scroll_type': 'middle',
+"    \ 'hide_yaml_meta': 1
+"    \ }
+"let g:mkdp_markdown_css = ''
+"let g:mkdp_highlight_css = ''
+"let g:mkdp_port = ''
+"let g:mkdp_page_title = '「${name}」'
+"
+"
+"" ===
+"" === vim-table-mode
+"" ===
+"map <LEADER>tm :TableModeToggle<CR>
+"
+"" ===
+"" === Python-syntax
+"" ===
+"let g:python_highlight_all = 1
+"" let g:python_slow_sync = 0
+"
+"
+"" ===
+"" === vim-indent-guide
+"" ===
+"let g:indent_guides_guide_size = 1
+"let g:indent_guides_start_level = 2
+"let g:indent_guides_enable_on_vim_startup = 1
+"let g:indent_guides_color_change_percent = 1
+"silent! unmap <LEADER>ig
+"autocmd WinEnter * silent! unmap <LEADER>ig
+"
+"
+"" ===
+"" === Goyo
+"" ===
+"map <LEADER>gy :Goyo<CR>
+"
+"
+"" ===
+"" === vim-signiture
+"" ===
+"let g:SignatureMap = {
+"        \ 'Leader'             :  "m",
+"        \ 'PlaceNextMark'      :  "m,",
+"        \ 'ToggleMarkAtLine'   :  "m.",
+"        \ 'PurgeMarksAtLine'   :  "dm-",
+"        \ 'DeleteMark'         :  "dm",
+"        \ 'PurgeMarks'         :  "dm/",
+"        \ 'PurgeMarkers'       :  "dm?",
+"        \ 'GotoNextLineAlpha'  :  "m<LEADER>",
+"        \ 'GotoPrevLineAlpha'  :  "",
+"        \ 'GotoNextSpotAlpha'  :  "m<LEADER>",
+"        \ 'GotoPrevSpotAlpha'  :  "",
+"        \ 'GotoNextLineByPos'  :  "",
+"        \ 'GotoPrevLineByPos'  :  "",
+"        \ 'GotoNextSpotByPos'  :  "mn",
+"        \ 'GotoPrevSpotByPos'  :  "mp",
+"        \ 'GotoNextMarker'     :  "",
+"        \ 'GotoPrevMarker'     :  "",
+"        \ 'GotoNextMarkerAny'  :  "",
+"        \ 'GotoPrevMarkerAny'  :  "",
+"        \ 'ListLocalMarks'     :  "m/",
+"        \ 'ListLocalMarkers'   :  "m?"
+"        \ }
+"
+"
+"" ===
+"" === Undotree
+"" ===
+"let g:undotree_DiffAutoOpen = 0
+"map L :UndotreeToggle<CR>
+"
+"

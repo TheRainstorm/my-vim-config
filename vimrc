@@ -124,8 +124,6 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Other useful utilities
 Plug 'junegunn/goyo.vim' " distraction free writing mode
 Plug 'scrooloose/nerdcommenter' " in <space>cc to comment a line
-"     Taglist
-Plug 'majutsushi/tagbar', { 'on': 'TagbarOpenAutoClose' }
 
 call plug#end()
 
@@ -196,11 +194,6 @@ let g:SignatureMap = {
         \ 'ListLocalMarks'     :  "m/",
         \ 'ListLocalMarkers'   :  "m?"
         \ }
-
-" ===
-" === Taglist
-" ===
-map <silent> tag :TagbarOpenAutoClose<CR>
 
 " ===
 " === Goyo

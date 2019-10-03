@@ -6,6 +6,8 @@ set norelativenumber
 set wrap
 set mouse=a
 set encoding=utf-8
+let &t_ut=''
+let g:airline_powerline_fonts = 1
 "search related
 set hlsearch
 exec "nohlsearch"
@@ -21,7 +23,6 @@ filetype on
 filetype indent on
 filetype plugin on
 filetype plugin indent on
-let &t_ut=''
 set expandtab
 set tabstop=2
 set shiftwidth=2
@@ -34,9 +35,6 @@ set indentexpr=
 set backspace=indent,eol,start
 set foldmethod=indent
 set foldlevel=99
-let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-let &t_SR = "\<Esc>]50;CursorShape=2\x7"
-let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 set laststatus=2
 set autochdir
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
@@ -88,7 +86,8 @@ map <right> :vertical resize +5<CR>
 map sh <C-w>H
 map sv <C-w>K
 "tap 
-map tn :tabe<CR> 
+map T :tabe<CR>
+map <C-T> :tabe<CR>:edit 
 map tj :-tabnext<CR> 
 map tl :+tabnext<CR> 
 
@@ -169,7 +168,7 @@ color snazzy
 " ===
 " === NERDTree
 " ===
-map o :NERDTreeToggle<CR>
+map tt :NERDTreeToggle<CR>
 " move 
 let NERDTreeMapActivateNode = "l"
 let NERDTreeMapCWD = "L"
@@ -222,100 +221,101 @@ let g:NERDTreeIndicatorMapCustom = {
 "let b:ale_fixers = ['autopep8', 'yapf']
 "
 "
-"" ===
-"" === Taglist
-"" ===
-"map <silent> T :TagbarOpenAutoClose<CR>
-"
-"
-"" ===
-"" === MarkdownPreview
-"" ===
-"let g:mkdp_auto_start = 0
-"let g:mkdp_auto_close = 1
-"let g:mkdp_refresh_slow = 0
-"let g:mkdp_command_for_global = 0
-"let g:mkdp_open_to_the_world = 0
-"let g:mkdp_open_ip = ''
-"let g:mkdp_browser = 'chromium'
-"let g:mkdp_echo_preview_url = 0
-"let g:mkdp_browserfunc = ''
-"let g:mkdp_preview_options = {
-"    \ 'mkit': {},
-"    \ 'katex': {},
-"    \ 'uml': {},
-"    \ 'maid': {},
-"    \ 'disable_sync_scroll': 0,
-"    \ 'sync_scroll_type': 'middle',
-"    \ 'hide_yaml_meta': 1
-"    \ }
-"let g:mkdp_markdown_css = ''
-"let g:mkdp_highlight_css = ''
-"let g:mkdp_port = ''
-"let g:mkdp_page_title = '「${name}」'
-"
-"
-"" ===
-"" === vim-table-mode
-"" ===
-"map <LEADER>tm :TableModeToggle<CR>
-"
-"" ===
-"" === Python-syntax
-"" ===
-"let g:python_highlight_all = 1
-"" let g:python_slow_sync = 0
-"
-"
-"" ===
-"" === vim-indent-guide
-"" ===
-"let g:indent_guides_guide_size = 1
-"let g:indent_guides_start_level = 2
-"let g:indent_guides_enable_on_vim_startup = 1
-"let g:indent_guides_color_change_percent = 1
-"silent! unmap <LEADER>ig
-"autocmd WinEnter * silent! unmap <LEADER>ig
-"
-"
-"" ===
-"" === Goyo
-"" ===
-"map <LEADER>gy :Goyo<CR>
-"
-"
-"" ===
-"" === vim-signiture
-"" ===
-"let g:SignatureMap = {
-"        \ 'Leader'             :  "m",
-"        \ 'PlaceNextMark'      :  "m,",
-"        \ 'ToggleMarkAtLine'   :  "m.",
-"        \ 'PurgeMarksAtLine'   :  "dm-",
-"        \ 'DeleteMark'         :  "dm",
-"        \ 'PurgeMarks'         :  "dm/",
-"        \ 'PurgeMarkers'       :  "dm?",
-"        \ 'GotoNextLineAlpha'  :  "m<LEADER>",
-"        \ 'GotoPrevLineAlpha'  :  "",
-"        \ 'GotoNextSpotAlpha'  :  "m<LEADER>",
-"        \ 'GotoPrevSpotAlpha'  :  "",
-"        \ 'GotoNextLineByPos'  :  "",
-"        \ 'GotoPrevLineByPos'  :  "",
-"        \ 'GotoNextSpotByPos'  :  "mn",
-"        \ 'GotoPrevSpotByPos'  :  "mp",
-"        \ 'GotoNextMarker'     :  "",
-"        \ 'GotoPrevMarker'     :  "",
-"        \ 'GotoNextMarkerAny'  :  "",
-"        \ 'GotoPrevMarkerAny'  :  "",
-"        \ 'ListLocalMarks'     :  "m/",
-"        \ 'ListLocalMarkers'   :  "m?"
-"        \ }
-"
-"
-"" ===
-"" === Undotree
-"" ===
-"let g:undotree_DiffAutoOpen = 0
-"map L :UndotreeToggle<CR>
-"
-"
+" ===
+" === Taglist
+" ===
+map <silent> tag :TagbarOpenAutoClose<CR>
+
+
+" ===
+" === MarkdownPreview
+" ===
+
+let g:mkdp_auto_start = 0
+let g:mkdp_auto_close = 1
+let g:mkdp_refresh_slow = 0
+let g:mkdp_command_for_global = 0
+let g:mkdp_open_to_the_world = 1
+let g:mkdp_open_ip = '127.0.0.1:4000'
+let g:mkdp_browser = ''
+let g:mkdp_echo_preview_url = 1
+let g:mkdp_browserfunc = ''
+let g:mkdp_preview_options = {
+    \ 'mkit': {},
+    \ 'katex': {},
+    \ 'uml': {},
+    \ 'maid': {},
+    \ 'disable_sync_scroll': 0,
+    \ 'sync_scroll_type': 'middle',
+    \ 'hide_yaml_meta': 1
+    \ }
+let g:mkdp_markdown_css = ''
+let g:mkdp_highlight_css = ''
+let g:mkdp_port = ''
+let g:mkdp_page_title = '「${name}」'
+
+
+" ===
+" === vim-table-mode
+" ===
+map <LEADER>tm :TableModeToggle<CR>
+
+" ===
+" === Python-syntax
+" ===
+let g:python_highlight_all = 1
+let g:python_slow_sync = 0
+
+
+" ===
+" === vim-indent-guide
+" ===
+let g:indent_guides_guide_size = 1
+let g:indent_guides_start_level = 2
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_color_change_percent = 1
+silent! unmap <LEADER>ig
+autocmd WinEnter * silent! unmap <LEADER>ig
+
+
+" ===
+" === Goyo
+" ===
+map <LEADER>gy :Goyo<CR>
+
+
+" ===
+" === vim-signiture
+" ===
+let g:SignatureMap = {
+        \ 'Leader'             :  "m",
+        \ 'PlaceNextMark'      :  "m,",
+        \ 'ToggleMarkAtLine'   :  "m.",
+        \ 'PurgeMarksAtLine'   :  "dm-",
+        \ 'DeleteMark'         :  "dm",
+        \ 'PurgeMarks'         :  "dm/",
+        \ 'PurgeMarkers'       :  "dm?",
+        \ 'GotoNextLineAlpha'  :  "m<LEADER>",
+        \ 'GotoPrevLineAlpha'  :  "",
+        \ 'GotoNextSpotAlpha'  :  "m<LEADER>",
+        \ 'GotoPrevSpotAlpha'  :  "",
+        \ 'GotoNextLineByPos'  :  "",
+        \ 'GotoPrevLineByPos'  :  "",
+        \ 'GotoNextSpotByPos'  :  "mn",
+        \ 'GotoPrevSpotByPos'  :  "mp",
+        \ 'GotoNextMarker'     :  "",
+        \ 'GotoPrevMarker'     :  "",
+        \ 'GotoNextMarkerAny'  :  "",
+        \ 'GotoPrevMarkerAny'  :  "",
+        \ 'ListLocalMarks'     :  "m/",
+        \ 'ListLocalMarkers'   :  "m?"
+        \ }
+
+
+" ===
+" === Undotree
+" ===
+let g:undotree_DiffAutoOpen = 0
+map ud :UndotreeToggle<CR>
+
+

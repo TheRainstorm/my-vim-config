@@ -45,8 +45,15 @@ set autochdir
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
 
+
+" copy and paste
+vnoremap <C-C> :w !xsel -i -b<CR><CR>
+noremap <C-V> :r !xsel -o -b<CR><CR>
+
 "basic save and quit
 map s <nop>
+map <C-s> :w<CR>
+map <C-q> :q<CR>
 map S :w<CR>
 map Q :q<CR>
 map R :source $MYVIMRC<CR>
@@ -119,7 +126,7 @@ Plug 'w0rp/ale'
 
 " Auto Complete
 "Plug 'Valloric/YouCompleteMe'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
 " Other useful utilities
 Plug 'junegunn/goyo.vim' " distraction free writing mode
@@ -127,7 +134,7 @@ Plug 'scrooloose/nerdcommenter' " in <space>cc to comment a line
 
 call plug#end()
 
-let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#enabled = 1
 let g:SnazzyTransparent = 1
 color snazzy
 

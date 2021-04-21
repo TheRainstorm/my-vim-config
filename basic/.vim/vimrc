@@ -41,14 +41,9 @@ set laststatus=2
 set autochdir
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 
-
-
-"basic save and quit
-map s <nop>
-map S :w<CR>
-map Q :q<CR>
-map R :source $MYVIMRC<CR>
-map ; :
+"clipboard
+map <C-c> "+y<CR>
+map <C-v> "+p<CR>
 
 "===
 "=== hjkl related
@@ -88,3 +83,4 @@ map sv <C-w>K
 map tn :tabe<CR> 
 map tj :-tabnext<CR> 
 map tl :+tabnext<CR> 
+

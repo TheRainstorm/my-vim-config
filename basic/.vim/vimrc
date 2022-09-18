@@ -49,17 +49,10 @@ map <C-v> "+p<CR>
 "=== hjkl related
 "===
 " move cursor
-noremap j h
-noremap l l
-noremap i k
-noremap k j
-noremap I 5k
-noremap K 5j
-noremap J 5h
+noremap J 5j
+noremap K 5k
+noremap H 5h
 noremap L 5l
-
-noremap h i
-noremap H I
 
 " split screen and move between screen
 map sl :set splitright<CR>:vsplit<CR>

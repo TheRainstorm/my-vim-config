@@ -10,7 +10,7 @@
         st = status
         rst = reset --hard
         lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit -15
-        lg-graph = log --oneline --graph --decorate --all
+        lgg = log --oneline --graph --decorate --all
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

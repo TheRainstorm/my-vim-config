@@ -1,0 +1,50 @@
+# Prompt
+#export PROMPT="%B%n@%m $PROMPT"
+#export RPROMPT="%*"
+
+alias l="ls -alh "
+alias t="tmux "
+alias ra="ranger"
+alias ca="conda activate "
+
+export proxy_addr=localhost
+export proxy_http_port=11223
+export proxy_socks_port=11223
+function set_proxy() {
+    export http_proxy=http://$proxy_addr:$proxy_http_port #如果使用git 不行，这两个http和https改成socks5就行
+    export https_proxy=http://$proxy_addr:$proxy_http_port
+    export all_proxy=socks5://$proxy_addr:$proxy_socks_port
+}
+function unset_proxy() {
+    unset http_proxy
+    unset https_proxy
+    unset all_proxy
+}
+function test_proxy() {
+    curl -v https://www.google.com 2>&1 | egrep 'HTTP/(2|1.1) 200'
+}
+
+##########
+#####  zplug
+##########
+source ~/.zplug/init.zsh
+
+# Zsh completion for lxc and lxd commands of LXD.
+zplug 'endaaman/lxd-completion-zsh'
+
+# Fish-like fast/unobtrusive autosuggestions for zsh.
+zplug 'zsh-users/zsh-autosuggestions'
+
+# Fish shell-like syntax highlighting for Zsh.
+zplug zsh-users/zsh-syntax-highlighting
+
+# Install plugins if there are plugins that have not been installed
+if ! zplug check --verbose; then
+    printf "Install? [y/N]: "
+    if read -q; then
+        echo; zplug install
+    fi
+fi
+
+# Then, source plugins and add commands to $PATH
+zplug load

@@ -1,9 +1,15 @@
+#!/bin/bash
+
 # clone repo
 clone_repo () {
     if [ -d ~/.my-vim-config ]; then
         echo "~/.my-vim-config exist, skip clone"
     else
         git clone https://github.com/TheRainstorm/my-vim-config ~/.my-vim-config
+        if [ ! $?=0 ]; then
+            echo "clone failed, exit"
+            exit 1
+        fi
     fi
 }
 
@@ -11,6 +17,7 @@ clone_repo () {
 check_dep () {
     # sudo apt update
     # sudo apt install git zsh curl python3 tmux
+    echo "sudo apt install git zsh curl python3 tmux"
     return 0
 }
 
@@ -20,7 +27,11 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
     y
 EOF
 
-echo "[ -f ~/.zsh-custom ] && source ~/.zsh-custom" >> ~/.zshrc
+output=$(cat ~/.zshrc|grep zsh-custom |wc -l)
+if [ $output = "0" ]; then
+    echo "[ -f ~/.zsh-custom ] && source ~/.zsh-custom" >> ~/.zshrc
+fi
+
 cp basic/.zsh* ~/
 
 source ~/.zshrc
@@ -35,27 +46,29 @@ y
 y
 EOF
 
-source ~/.zshrc 
+source ~/.zshrc
 }
 
 # tmux
 setup_tmux () {
     cp tmux/.tmux.conf ~/
 }
-
 # utils
 setup_others () {
     cp -r basic/.pip ~/
-    cp -r basic/.gitconfig ~/
+    cp basic/.gitconfig ~/
 }
 
 # main
 main () {
 check_dep
-clone_repo && cd ~/.my-vim-config
+clone_repo
+cd ~/.my-vim-config
 
 setup_zsh
 setup_fzf
 setup_tmux
 setup_others
 }
+
+main

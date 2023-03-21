@@ -2,10 +2,11 @@
 [ -f ~/.zsh-variables ] && source ~/.zsh-variables
 
 # Prompt
-#export PROMPT="%B%n@%m $PROMPT"
+export PROMPT="%B%n@%m $PROMPT"
 #export RPROMPT="%*"
 
-alias l="ls -alh "
+alias l="ls -lh "
+alias ll="ls -alh "
 alias t="tmux "
 alias ra="ranger"
 alias ca="conda activate "
@@ -27,8 +28,8 @@ function test_proxy() {
     curl -v https://www.google.com 2>&1 | egrep 'HTTP/(2|1.1) 200'
 }
 
-# fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # zplug
-[ -f ~/.zsh-zplug ] && source ~/.zsh-zplug
+#[ -f ~/.zsh-zplug ] && source ~/.zsh-zplug
+
+# zcomet
+[ -f ~/.zsh-zcomet ] && source ~/.zsh-zcomet

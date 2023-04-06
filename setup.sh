@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/zsh
 
 # clone repo
 clone_repo () {
@@ -15,9 +15,9 @@ clone_repo () {
 
 # install dependency
 check_dep () {
-    # sudo apt update
-    # sudo apt install git zsh curl python3 tmux
-    echo "sudo apt install git zsh curl python3 tmux"
+    sudo apt update
+    sudo apt install git curl 
+    echo "sudo apt install git curl" 
     return 0
 }
 

@@ -5,11 +5,19 @@
 export PROMPT="%B%n@%m $PROMPT"
 #export RPROMPT="%*"
 
+# fix: alias don't work when use sudo, https://askubuntu.com/a/22043
+alias sudo="sudo "
+
 alias l="ls -lh "
 alias ll="ls -alh "
 alias t="tmux "
 alias ra="ranger"
 alias ca="conda activate "
+alias ip6="ip -6 "
+alias ip6t="ip -6 ro s t "
+alias ipt="ip ro s t "
+alias b="btrfs "
+alias b-sub="btrfs subvolume list / --sort=path |grep -v var/lib/docker/ |grep -v var/lib/btrfs_lxd/"
 
 export proxy_addr=localhost
 export proxy_http_port=11223
@@ -33,3 +41,4 @@ function test_proxy() {
 
 # zcomet
 [ -f ~/.zsh-zcomet ] && source ~/.zsh-zcomet
+

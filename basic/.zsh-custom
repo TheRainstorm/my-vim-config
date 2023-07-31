@@ -2,12 +2,24 @@
 [ -f ~/.zsh-variables ] && source ~/.zsh-variables
 
 # Prompt
-export PROMPT="%B%n@%m $PROMPT"
-#export RPROMPT="%*"
+# Load promptinit
+autoload -Uz promptinit && promptinit
 
-# fix: alias don't work when use sudo, https://askubuntu.com/a/22043
+# Define the theme
+prompt_mytheme_setup() {
+  PS1="%B%n@%m $PS1"
+}
+
+# Add the theme to promptsys
+prompt_themes+=( mytheme )
+
+# Load the theme
+#prompt mytheme
+#prompt walters
+#prompt fade
+
+# fix alias when use sudo, https://askubuntu.com/a/22043
 alias sudo="sudo "
-
 alias l="ls -lh "
 alias ll="ls -alh "
 alias t="tmux "
@@ -17,7 +29,10 @@ alias ip6="ip -6 "
 alias ip6t="ip -6 ro s t "
 alias ipt="ip ro s t "
 alias b="btrfs "
+alias b-list="btrfs subvolume list "
 alias b-sub="btrfs subvolume list / --sort=path |grep -v var/lib/docker/ |grep -v var/lib/btrfs_lxd/"
+alias b-snap="btrfs subvolume snapshot"
+alias s="systemctl "
 
 export proxy_addr=localhost
 export proxy_http_port=11223

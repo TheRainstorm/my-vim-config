@@ -8,7 +8,7 @@ source ${ZDOTDIR:-${HOME}}/.zcomet/bin/zcomet.zsh
 # It is good to load these popular plugins last, and in this order:
 zcomet load zsh-users/zsh-syntax-highlighting
 zcomet load zsh-users/zsh-autosuggestions
-zcomet load endaaman/lxd-completion-zsh
+#zcomet load endaaman/lxd-completion-zsh
 
 # Run compinit and compile its cache
 zcomet compinit

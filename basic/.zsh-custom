@@ -55,5 +55,5 @@ function test_proxy() {
 #[ -f ~/.zsh-zplug ] && source ~/.zsh-zplug
 
 # zcomet
-[ -f ~/.zsh-zcomet ] && source ~/.zsh-zcomet
+#[ -f ~/.zsh-zcomet ] && source ~/.zsh-zcomet
 

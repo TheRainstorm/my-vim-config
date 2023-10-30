@@ -71,13 +71,14 @@ check_dep
 clone_repo
 cd ~/.my-vim-config
 
-if [ $#=2 ]; then
-    if [ $1="bash" ]; then
-	setup_bash
-    fi
-else
-    setup_zsh
-fi
+setup_zsh
+#if [ $#=2 ]; then
+#    if [ $1="bash" ]; then
+#	setup_bash
+#    fi
+#else
+#    setup_zsh
+#fi
 
 setup_fzf
 setup_tmux

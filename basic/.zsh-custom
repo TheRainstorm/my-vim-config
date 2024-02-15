@@ -1,6 +1,10 @@
 # variable
 [ -f ~/.zsh-variables ] && source ~/.zsh-variables
 
+# set UTF-8, useful for openwrt
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+
 # Prompt
 # Load promptinit
 autoload -Uz promptinit && promptinit
@@ -33,6 +37,7 @@ alias b-list="btrfs subvolume list "
 alias b-sub="btrfs subvolume list / --sort=path |grep -v var/lib/docker/ |grep -v var/lib/btrfs_lxd/"
 alias b-snap="btrfs subvolume snapshot"
 alias s="systemctl "
+alias hide="unset HISTFILE"
 
 export proxy_addr=localhost
 export proxy_http_port=11223

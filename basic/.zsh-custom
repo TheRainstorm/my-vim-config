@@ -18,7 +18,7 @@ prompt_mytheme_setup() {
 prompt_themes+=( mytheme )
 
 # Load the theme
-#prompt mytheme
+prompt mytheme
 #prompt walters
 #prompt fade
 

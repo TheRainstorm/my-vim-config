@@ -38,6 +38,10 @@ alias b-sub="btrfs subvolume list / --sort=path |grep -v var/lib/docker/ |grep -
 alias b-snap="btrfs subvolume snapshot"
 alias s="systemctl "
 alias hide="unset HISTFILE"
+# check lastest user online
+function who(){
+	command who | awk '!seen[$1] || $3 > latest[$1] { latest[$1]=$3; line[$1]=$0 } END { for (user in line) print line[user] }'
+}
 
 export proxy_addr=localhost
 export proxy_http_port=11223

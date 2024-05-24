@@ -1,5 +1,6 @@
 # variable
 [ -f ~/.zsh-variables ] && source ~/.zsh-variables
+[ -f ~/.zsh-local ] && source ~/.zsh-local # custom config on each local host
 
 # set UTF-8, useful for openwrt
 export LC_ALL=en_US.UTF-8

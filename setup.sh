@@ -80,9 +80,20 @@ setup_zsh
 #    setup_zsh
 #fi
 
-setup_fzf
+if [ $1 -eq 1 ]; then
+    setup_fzf
+fi
+
 setup_tmux
 setup_others
 }
 
-main
+echo "args: $#"
+set_fzf=1
+if [ $# -eq 1 ]; then
+    if [ $1 = "0" ]; then
+    set_fzf=0
+    fi
+fi
+
+main $set_fzf

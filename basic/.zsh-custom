@@ -2,26 +2,39 @@
 [ -f ~/.zsh-variables ] && source ~/.zsh-variables
 [ -f ~/.zsh-local ] && source ~/.zsh-local # custom config on each local host
 
+# zsh special config
+if echo $0 | grep -q "zsh"; then
+	# Set prompt
+	# Load promptinit
+	autoload -Uz promptinit && promptinit
+
+	# Define the theme
+	prompt_mytheme_setup() {
+	  PS1="%B%n@%m $PS1"
+	}
+
+	# Add the theme to promptsys
+	prompt_themes+=( mytheme )
+
+	# Load the theme
+	prompt mytheme
+	#prompt walters
+	#prompt fade
+
+
+	# zplug
+	#[ -f ~/.zsh-zplug ] && source ~/.zsh-zplug
+
+	# zcomet
+	[ -f ~/.zsh-zcomet ] && source ~/.zsh-zcomet
+else
+	PS1="%B%n@%m $PS1"
+fi
+
+
 # set UTF-8, useful for openwrt
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
-
-# Prompt
-# Load promptinit
-autoload -Uz promptinit && promptinit
-
-# Define the theme
-prompt_mytheme_setup() {
-  PS1="%B%n@%m $PS1"
-}
-
-# Add the theme to promptsys
-prompt_themes+=( mytheme )
-
-# Load the theme
-prompt mytheme
-#prompt walters
-#prompt fade
 
 # fix alias when use sudo, https://askubuntu.com/a/22043
 alias sudo="sudo "
@@ -79,10 +92,4 @@ function unset_proxy() {
 function test_proxy() {
     curl -v https://www.google.com 2>&1 | egrep 'HTTP/(2|1.1) 200'
 }
-
-# zplug
-#[ -f ~/.zsh-zplug ] && source ~/.zsh-zplug
-
-# zcomet
-#[ -f ~/.zsh-zcomet ] && source ~/.zsh-zcomet
 

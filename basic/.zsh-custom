@@ -4,13 +4,19 @@
 
 # zsh special config
 if echo $0 | grep -q "zsh"; then
-	# Set prompt
+	### Set prompt
 	# Load promptinit
 	autoload -Uz promptinit && promptinit
 
 	# Define the theme
 	prompt_mytheme_setup() {
-	  PS1="%B%n@%m $PS1"
+		# add user@hostname to robbyrussell
+		PROMPT="%B%n@%m %(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
+		PROMPT+=' %{$fg[cyan]%}%c%{$reset_color%} $(git_prompt_info)'
+		ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg_bold[blue]%}git:(%{$fg[red]%}"
+		ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%} "
+		ZSH_THEME_GIT_PROMPT_DIRTY="%{$fg[blue]%}) %{$fg[yellow]%}✗"
+		ZSH_THEME_GIT_PROMPT_CLEAN="%{$fg[blue]%})"
 	}
 
 	# Add the theme to promptsys
@@ -21,14 +27,23 @@ if echo $0 | grep -q "zsh"; then
 	#prompt walters
 	#prompt fade
 
-
+	### Load Plugin
 	# zplug
 	#[ -f ~/.zsh-zplug ] && source ~/.zsh-zplug
 
 	# zcomet
 	[ -f ~/.zsh-zcomet ] && source ~/.zsh-zcomet
+
+	### Others
+	# history
+	# Save multi-line commands as one command
+	setopt HIST_EXPIRE_DUPS_FIRST
+	# Avoid duplicates
+	setopt HIST_IGNORE_DUPS
+	setopt HIST_IGNORE_SPACE
+	setopt HIST_FIND_NO_DUPS
 else
-	PS1="%B%n@%m $PS1"
+	PS1='\u@\h:\w\$ '
 fi
 
 
@@ -67,14 +82,6 @@ function who(){
 	#command who | awk '!seen[$1] || $3 > latest[$1] { latest[$1]=$3; line[$1]=$0 } END { for (user in line) print line[user] }'
 	command who | awk '!seen[$1] || $3 > latest[$1] { seen[$1]=$1; latest[$1]=$3; line[$1]=$0 } END { for (user in line) print latest[user] "|" line[user] }' |sort |awk -F "|" '{print $2}'
 }
-
-# history
-# Save multi-line commands as one command
-setopt HIST_EXPIRE_DUPS_FIRST
-# Avoid duplicates
-setopt HIST_IGNORE_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_FIND_NO_DUPS
 
 export proxy_addr=localhost
 export proxy_http_port=11223

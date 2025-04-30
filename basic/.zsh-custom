@@ -58,6 +58,7 @@ alias sm="smartctl -a "
 alias lb="lsblk -f |grep -v zd "
 
 alias history="history -i"
+alias gitA='export GIT_COMMITTER_DATE="$(git log -1 --pretty=tformat:%cD)" && git cm --amend --no-edit && unset GIT_COMMITTER_DATE'
 
 # check lastest user online
 function who(){
@@ -66,12 +67,18 @@ function who(){
 }
 
 export proxy_addr=localhost
-export proxy_http_port=11223
+export proxy_http_port=11222
 export proxy_socks_port=11223
-function set_proxy() {
-    export http_proxy=http://$proxy_addr:$proxy_http_port #如果使用git 不行，这两个http和https改成socks5就行
-    export https_proxy=http://$proxy_addr:$proxy_http_port
-    export all_proxy=socks5://$proxy_addr:$proxy_socks_port
+function set_http() {
+    export all_proxy=http://$proxy_addr:$proxy_http_port
+    export http_proxy=$all_proxy
+    export https_proxy=$all_proxy
+}
+function set_socks() {
+    #export all_proxy=socks5://$proxy_addr:$proxy_socks_port
+    export all_proxy=socks5h://$proxy_addr:$proxy_socks_port
+    export http_proxy=$all_proxy
+    export https_proxy=$all_proxy
 }
 function unset_proxy() {
     unset http_proxy

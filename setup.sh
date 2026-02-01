@@ -35,6 +35,9 @@ fi
 
 cp basic/.zsh* ~/
 
+# disable auto update
+sed -i '1i\
+	DISABLE_AUTO_UPDATE="true"' ~/.zshrc
 source ~/.zshrc
 }
 
@@ -58,6 +61,10 @@ EOF
 # tmux
 setup_tmux () {
     cp tmux/.tmux.conf ~/
+}
+# vim
+setup_vim() {
+    cp vim/vimrc ~/.vimrc
 }
 # utils
 setup_others () {
@@ -85,6 +92,7 @@ if [ $1 -eq 1 ]; then
 fi
 
 setup_tmux
+setup_vim
 setup_others
 }
 

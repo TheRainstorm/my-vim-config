@@ -33,7 +33,7 @@ syntax on
 " 显示行号
 "set number
 " 关闭相对行号 (只显示绝对行号)
-set norelativenumber
+"set norelativenumber
 
 " 开启自动折行 (长行自动换行显示)
 set wrap

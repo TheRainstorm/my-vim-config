@@ -65,6 +65,11 @@ alias lb="lsblk -f |grep -v zd "
 alias history="history -i"
 alias gitA='export GIT_COMMITTER_DATE="$(git log -1 --pretty=tformat:%cD)" && git cm --amend --no-edit && unset GIT_COMMITTER_DATE'
 
+alias claude-yolo='claude --dangerously-skip-permissions'
+alias cc='claude --dangerously-skip-permissions'
+alias codex-yolo='codex --sandbox danger-full-access --ask-for-approval never'
+alias cx='codex --sandbox danger-full-access --ask-for-approval never'
+
 # check lastest user online
 function who(){
 	#command who | awk '!seen[$1] || $3 > latest[$1] { latest[$1]=$3; line[$1]=$0 } END { for (user in line) print line[user] }'

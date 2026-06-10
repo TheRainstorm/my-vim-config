@@ -83,6 +83,7 @@ copy_file() {
     local src="$1"
     local dst="$(home_dir)/$2"
 
+    log "Copy ${dst/#$HOME/~}"
     mkdir -p "${dst:h}"
     cp "$src" "$dst"
 }
@@ -91,6 +92,7 @@ copy_dir() {
     local src="$1"
     local dst="$(home_dir)/$2"
 
+    log "Copy ${dst/#$HOME/~}/"
     mkdir -p "$dst"
     cp -R "$src"/. "$dst"/
 }
@@ -101,7 +103,12 @@ append_once() {
 
     mkdir -p "${file:h}"
     touch "$file"
-    grep -Fqx "$line" "$file" || print -- "$line" >> "$file"
+    if grep -Fqx "$line" "$file"; then
+        log "Keep ${file/#$HOME/~}"
+    else
+        log "Append ${file/#$HOME/~}"
+        print -- "$line" >> "$file"
+    fi
 }
 
 insert_once_before_omz() {
@@ -110,8 +117,12 @@ insert_once_before_omz() {
     local tmp
 
     touch "$zshrc"
-    grep -Fqx "$line" "$zshrc" && return 0
+    if grep -Fqx "$line" "$zshrc"; then
+        log "Keep ${zshrc/#$HOME/~}"
+        return 0
+    fi
 
+    log "Patch ${zshrc/#$HOME/~}"
     tmp="$(mktemp)"
     awk -v line="$line" '
         $0 == "source $ZSH/oh-my-zsh.sh" && done == 0 {
@@ -146,8 +157,14 @@ update_repo() {
 }
 
 install_deps() {
-    (( INSTALL_DEPS == 1 )) || return 0
-    command -v apt >/dev/null 2>&1 || return 0
+    if (( INSTALL_DEPS != 1 )); then
+        log "Skip dependency install"
+        return 0
+    fi
+    if ! command -v apt >/dev/null 2>&1; then
+        log "Skip dependency install: apt not found"
+        return 0
+    fi
 
     log "Installing dependencies"
     sudo apt update
@@ -164,7 +181,10 @@ install_oh_my_zsh() {
         return
     fi
 
-    [[ -d "$HOME/.oh-my-zsh" ]] && return 0
+    if [[ -d "$HOME/.oh-my-zsh" ]]; then
+        log "Keep ~/.oh-my-zsh"
+        return 0
+    fi
 
     log "Installing oh-my-zsh"
     RUNZSH=no CHSH=no sh -c \
@@ -194,7 +214,10 @@ install_my_configs() {
 install_fzf() {
     local root="$(home_dir)"
 
-    (( INSTALL_FZF == 1 )) || return 0
+    if (( INSTALL_FZF != 1 )); then
+        log "Skip fzf"
+        return 0
+    fi
 
     if [[ -n "$PREFIX" ]]; then
         log "Preparing fzf in prefix"
@@ -204,6 +227,7 @@ install_fzf() {
     fi
 
     [[ -d "$HOME/.fzf" ]] || git clone --depth 1 "$FZF_URL" "$HOME/.fzf"
+    log "Configure fzf"
     "$HOME/.fzf/install" --all --no-bash --no-fish
 }
 

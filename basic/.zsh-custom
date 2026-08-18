@@ -1,18 +1,18 @@
 # variable
-[ -f ~/.zsh-variables ] && source ~/.zsh-variables
-[ -f ~/.zsh-local ] && source ~/.zsh-local # custom config on each local host
+[ -f ~/.zsh-variables ] && . ~/.zsh-variables
+[ -f ~/.zsh-local ] && . ~/.zsh-local # custom config on each local host
 
-# zsh special config
+# shell 差异配置：zsh / bash / 其他 sh（公共部分在下方，环境变量复用 ~/.zsh-variables）
 if echo $0 | grep -q "zsh"; then
 	# ash not supported syntax
-	[ -f ~/.zsh-only ] && source ~/.zsh-only
+	[ -f ~/.zsh-only ] && . ~/.zsh-only
 
 	### Load Plugin
 	# zplug
-	#[ -f ~/.zsh-zplug ] && source ~/.zsh-zplug
+	#[ -f ~/.zsh-zplug ] && . ~/.zsh-zplug
 
 	# zcomet
-	[ -f ~/.zsh-zcomet ] && source ~/.zsh-zcomet
+	[ -f ~/.zsh-zcomet ] && . ~/.zsh-zcomet
 
 	### Others
 	# history
@@ -22,14 +22,94 @@ if echo $0 | grep -q "zsh"; then
 	setopt HIST_IGNORE_DUPS
 	setopt HIST_IGNORE_SPACE
 	setopt HIST_FIND_NO_DUPS
+	# zsh history 带时间显示
+	alias history="history -i"
+elif [ -n "$BASH_VERSION" ]; then
+	### History（bash）
+	export HISTSIZE=100000
+	export HISTFILESIZE=200000
+	export HISTTIMEFORMAT="%F %T  "            # history 显示时间戳
+	export HISTCONTROL=ignoreboth:erasedups
+	export HISTIGNORE="ls:ll:la:l:cd:cd ..:pwd:exit:clear:history:h:bg:fg"
+	# 追加而非覆盖；多行命令合并为一条
+	shopt -s histappend
+	shopt -s cmdhist
+	# 每条命令执行完立即写入 history（多终端同步），退出时再补写一次
+	PROMPT_COMMAND='rc=$?; history -a'
+	trap 'history -a' EXIT
+
+	### Colors（bash）
+	if [ -x /usr/bin/dircolors ]; then
+	    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+	fi
+	alias ls='ls --color=auto'
+	alias grep='grep --color=auto'
+	alias egrep='egrep --color=auto'
+	alias fgrep='fgrep --color=auto'
+	export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+	export LESS='-R'
+	export LESS_TERMCAP_mb=$'\e[1;31m'
+	export LESS_TERMCAP_md=$'\e[1;36m'
+	export LESS_TERMCAP_me=$'\e[0m'
+	export LESS_TERMCAP_so=$'\e[01;44;33m'
+	export LESS_TERMCAP_se=$'\e[0m'
+	export LESS_TERMCAP_us=$'\e[1;32m'
+	export LESS_TERMCAP_ue=$'\e[0m'
+
+	### Prompt（两行：user@host:path [git]，$ 颜色随退出码变化）
+	if [ -f /usr/lib/git-core/git-sh-prompt ]; then
+	    . /usr/lib/git-core/git-sh-prompt
+	fi
+	export GIT_PS1_SHOWDIRTYSTATE=1
+	export GIT_PS1_SHOWUNTRACKEDFILES=1
+	export GIT_PS1_SHOWSTASHSTATE=1
+	__ps1() {
+	    local r=$'\e[0m'
+	    local b_green=$'\e[1;32m' b_blue=$'\e[1;34m' b_red=$'\e[1;31m'
+
+	    # 终端标题
+	    printf '\e]0;%s@%s: %s\a' "$USER" "$HOSTNAME" "${PWD/#$HOME/~}"
+
+	    # 第一行：user@host:path
+	    printf '%s%s@%s%s:%s%s%s' "$b_green" "$USER" "$HOSTNAME" "$r" "$b_blue" "${PWD/#$HOME/~}" "$r"
+
+	    # git 分支
+	    if declare -F __git_ps1 >/dev/null 2>&1; then
+	        printf ' %s' "$(__git_ps1 '(%s)')"
+	    fi
+
+	    # 第二行：$ 颜色随上条命令退出码变化（rc 由 PROMPT_COMMAND 记录）
+	    if [ "${rc:-0}" -eq 0 ]; then
+	        printf '\n%s$%s ' "$b_green" "$r"
+	    else
+	        printf '\n%s$%s ' "$b_red" "$r"
+	    fi
+	}
+	PS1='$(__ps1)'
+
+	### shopt / 补全 / readline（bash）
+	shopt -s checkwinsize
+	shopt -s globstar
+	#shopt -s extglob
+	#shopt -s autocd
+	if ! shopt -oq posix; then
+	    if [ -f /usr/share/bash-completion/bash_completion ]; then
+	        . /usr/share/bash-completion/bash_completion
+	    elif [ -f /etc/bash_completion ]; then
+	        . /etc/bash_completion
+	    fi
+	fi
+	if [ -t 0 ]; then
+	    bind 'set completion-ignore-case on'
+	    bind 'set show-all-if-ambiguous on'
+	fi
+
+	alias h="history"
 else
+	# 其他 POSIX sh（如 openwrt 的 ash）：仅设置简单彩色提示符
 	PS1='\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-        # no color
-        #PS1='\u@\h:\w\$ '
-	export HISTSIZE=1000000
-	export HISTFILESIZE=1000000
-	export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S"
-	export HISTCONTROL=ignoreboth
+	# no color
+	#PS1='\u@\h:\w\$ '
 fi
 
 
@@ -62,16 +142,17 @@ alias zget="zfs get compression,compressratio,used -r -t filesystem,volume "
 alias sm="smartctl -a "
 alias lb="lsblk -f |grep -v zd "
 
-alias history="history -i"
 alias gitA='export GIT_COMMITTER_DATE="$(git log -1 --pretty=tformat:%cD)" && git cm --amend --no-edit && unset GIT_COMMITTER_DATE'
 
 alias claude-yolo='claude --dangerously-skip-permissions'
 alias cc='claude --dangerously-skip-permissions'
+alias hcc='hapi claude --dangerously-skip-permissions'
 alias codex-yolo='codex --sandbox danger-full-access --ask-for-approval never'
-alias cx='codex --sandbox danger-full-access --ask-for-approval never'
+alias cx='codex --yolo'
+alias hcx='hapi codex --yolo'
 
 # check lastest user online
-function who(){
+who() {
 	#command who | awk '!seen[$1] || $3 > latest[$1] { latest[$1]=$3; line[$1]=$0 } END { for (user in line) print line[user] }'
 	command who | awk '!seen[$1] || $3 > latest[$1] { seen[$1]=$1; latest[$1]=$3; line[$1]=$0 } END { for (user in line) print latest[user] "|" line[user] }' |sort |awk -F "|" '{print $2}'
 }
@@ -79,23 +160,22 @@ function who(){
 export proxy_addr=localhost
 export proxy_http_port=11222
 export proxy_socks_port=11223
-function set_http() {
+set_http() {
     export all_proxy=http://$proxy_addr:$proxy_http_port
     export http_proxy=$all_proxy
     export https_proxy=$all_proxy
 }
-function set_socks() {
+set_socks() {
     #export all_proxy=socks5://$proxy_addr:$proxy_socks_port
     export all_proxy=socks5h://$proxy_addr:$proxy_socks_port
     export http_proxy=$all_proxy
     export https_proxy=$all_proxy
 }
-function unset_proxy() {
+unset_proxy() {
     unset http_proxy
     unset https_proxy
     unset all_proxy
 }
-function test_proxy() {
+test_proxy() {
     curl -v https://www.google.com 2>&1 | egrep 'HTTP/(2|1.1) 200'
 }
-

@@ -35,7 +35,7 @@ elif [ -n "$BASH_VERSION" ]; then
 	shopt -s histappend
 	shopt -s cmdhist
 	# 每条命令执行完立即写入 history（多终端同步），退出时再补写一次
-	PROMPT_COMMAND='rc=$?; history -a'
+	PROMPT_COMMAND='rc=$?; history -a; __ps1'
 	trap 'history -a' EXIT
 
 	### Colors（bash）
@@ -57,35 +57,36 @@ elif [ -n "$BASH_VERSION" ]; then
 	export LESS_TERMCAP_ue=$'\e[0m'
 
 	### Prompt（两行：user@host:path [git]，$ 颜色随退出码变化）
-	if [ -f /usr/lib/git-core/git-sh-prompt ]; then
-	    . /usr/lib/git-core/git-sh-prompt
-	fi
-	export GIT_PS1_SHOWDIRTYSTATE=1
-	export GIT_PS1_SHOWUNTRACKEDFILES=1
-	export GIT_PS1_SHOWSTASHSTATE=1
+	# git 分支（只显示分支名，不带状态标记，也不跑 git status）
+	__git_info() {
+	    local branch
+	    branch=$(git symbolic-ref --short HEAD 2>/dev/null) || return 0
+	    printf ' (%s)' "$branch"
+	}
 	__ps1() {
-	    local r=$'\e[0m'
-	    local b_green=$'\e[1;32m' b_blue=$'\e[1;34m' b_red=$'\e[1;31m'
+	    # 在 PROMPT_COMMAND 里组装 PS1，用 \[ \] 包住所有非打印序列；
+	    # 否则 readline 会把转义序列当可见字符计数（Ctrl-R / Ctrl-Left 时光标错位、输入不可见）
+	    local rc=${rc:-0}
+	    local r='\[\e[0m\]'
+	    local b_green='\[\e[1;32m\]'
+	    local b_blue='\[\e[1;34m\]'
+	    local b_red='\[\e[1;31m\]'
+	    local dir="${PWD/#$HOME/~}"
 
-	    # 终端标题
-	    printf '\e]0;%s@%s: %s\a' "$USER" "$HOSTNAME" "${PWD/#$HOME/~}"
+	    # 终端标题（OSC 序列，整体算非打印）
+	    local title='\[\e]0;'"$USER"'@'"$HOSTNAME"': '"$dir"'\a\]'
 
-	    # 第一行：user@host:path
-	    printf '%s%s@%s%s:%s%s%s' "$b_green" "$USER" "$HOSTNAME" "$r" "$b_blue" "${PWD/#$HOME/~}" "$r"
+	    # git 分支 + 状态（纯文本，无转义，宽度计数正常）
+	    local git
+	    git="$(__git_info)"
 
-	    # git 分支
-	    if declare -F __git_ps1 >/dev/null 2>&1; then
-	        printf ' %s' "$(__git_ps1 '(%s)')"
-	    fi
-
-	    # 第二行：$ 颜色随上条命令退出码变化（rc 由 PROMPT_COMMAND 记录）
-	    if [ "${rc:-0}" -eq 0 ]; then
-	        printf '\n%s$%s ' "$b_green" "$r"
+	    # 两行提示符；$ 颜色随上条命令退出码变化
+	    if [ "$rc" -eq 0 ]; then
+	        PS1="${title}${b_green}${USER}@${HOSTNAME}${r}:${b_blue}${dir}${r}${git}"$'\n'"${b_green}\$${r} "
 	    else
-	        printf '\n%s$%s ' "$b_red" "$r"
+	        PS1="${title}${b_green}${USER}@${HOSTNAME}${r}:${b_blue}${dir}${r}${git}"$'\n'"${b_red}\$${r} "
 	    fi
 	}
-	PS1='$(__ps1)'
 
 	### shopt / 补全 / readline（bash）
 	shopt -s checkwinsize

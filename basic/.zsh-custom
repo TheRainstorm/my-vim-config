@@ -80,11 +80,16 @@ elif [ -n "$BASH_VERSION" ]; then
 	    local git
 	    git="$(__git_info)"
 
+	    # conda 环境名：conda activate 是往现有 PS1 前面拼 (env)，
+	    # 而这里每次重建 PS1，所以必须自己带上，否则激活后提示符不显示环境
+	    local conda_env=""
+	    [ -n "${CONDA_DEFAULT_ENV:-}" ] && conda_env="(${CONDA_DEFAULT_ENV}) "
+
 	    # 两行提示符；$ 颜色随上条命令退出码变化
 	    if [ "$rc" -eq 0 ]; then
-	        PS1="${title}${b_green}${USER}@${HOSTNAME}${r}:${b_blue}${dir}${r}${git}"$'\n'"${b_green}\$${r} "
+	        PS1="${title}${b_green}${conda_env}${USER}@${HOSTNAME}${r}:${b_blue}${dir}${r}${git}"$'\n'"${b_green}\$${r} "
 	    else
-	        PS1="${title}${b_green}${USER}@${HOSTNAME}${r}:${b_blue}${dir}${r}${git}"$'\n'"${b_red}\$${r} "
+	        PS1="${title}${b_green}${conda_env}${USER}@${HOSTNAME}${r}:${b_blue}${dir}${r}${git}"$'\n'"${b_red}\$${r} "
 	    fi
 	}
 

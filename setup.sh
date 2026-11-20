@@ -1,5 +1,11 @@
 #!/usr/bin/env zsh
 
+# source 时也在独立进程中运行，避免严格模式影响当前交互 shell。
+if [[ "$ZSH_EVAL_CONTEXT" == *:file ]]; then
+    command zsh -f "${${(%):-%N}:A}" "$@"
+    return $?
+fi
+
 set -euo pipefail
 
 # 常用变量都放在前面，之后要换源、换目录会比较好改。
@@ -9,6 +15,8 @@ FZF_URL="https://github.com/junegunn/fzf.git"
 
 SCRIPT_DIR="${0:A:h}"
 REPO_DIR="$SCRIPT_DIR"
+DEFAULT_REPO_DIR="$HOME/Repo/my-vim-config"
+REPO_DIR_OPTION_SET=0
 PREFIX=""
 COMMAND="install"
 INSTALL_DEPS=1
@@ -23,7 +31,7 @@ Usage:
 
 Options:
   -p, --prefix DIR     Install files under DIR instead of \$HOME.
-  --repo-dir DIR       Use another config repo directory.
+  --repo-dir DIR       Use or clone the config repo at DIR.
   --skip-deps          Skip apt dependency install.
   --no-fzf             Skip fzf.
   --with-fzf           Install/update fzf when running update.
@@ -31,6 +39,8 @@ Options:
 
 Compatibility:
   ./setup.sh 0         Same as: ./setup.sh --no-fzf
+
+When run outside the config repo, clone it into \$HOME/Repo/my-vim-config.
 EOF
 }
 
@@ -53,6 +63,7 @@ parse_args() {
             --repo-dir)
                 (( $# >= 2 )) || die "$1 requires a directory"
                 REPO_DIR="${2:A}"
+                REPO_DIR_OPTION_SET=1
                 shift
                 ;;
             -p|--prefix)
@@ -73,6 +84,9 @@ parse_args() {
     [[ "$COMMAND" == "update" ]] && INSTALL_DEPS=0
     [[ "$COMMAND" == "update" && "$FZF_OPTION_SET" == "0" ]] && INSTALL_FZF=0
     [[ -n "$PREFIX" ]] && INSTALL_DEPS=0
+
+    # 可选条件不满足也属于正常解析结果。
+    return 0
 }
 
 home_dir() {
@@ -150,6 +164,39 @@ clone_or_copy() {
     fi
 }
 
+has_config_files() {
+    local repo="$1"
+    local file
+
+    for file in basic/.zsh-custom basic/.zsh-only basic/.zsh-zcomet \
+                basic/.gitconfig tmux/.tmux.conf vim/vimrc; do
+        [[ -f "$repo/$file" ]] || return 1
+    done
+    [[ -d "$repo/basic/.pip" ]]
+}
+
+ensure_config_repo() {
+    if has_config_files "$REPO_DIR"; then
+        log "Use config repo $REPO_DIR"
+        return 0
+    fi
+
+    if (( REPO_DIR_OPTION_SET == 0 )); then
+        REPO_DIR="$DEFAULT_REPO_DIR"
+    fi
+    if has_config_files "$REPO_DIR"; then
+        log "Use config repo $REPO_DIR"
+        return 0
+    fi
+
+    command -v git >/dev/null 2>&1 || die "git is required to clone the config repo"
+    [[ ! -e "$REPO_DIR" ]] || die "$REPO_DIR exists but is missing config files; choose another --repo-dir"
+    mkdir -p "${REPO_DIR:h}"
+    log "Clone config repo to $REPO_DIR"
+    git clone --depth 1 "$REPO_URL" "$REPO_DIR"
+    has_config_files "$REPO_DIR" || die "cloned repo is missing required config files"
+}
+
 update_repo() {
     [[ -d "$REPO_DIR/.git" ]] || die "$REPO_DIR is not a git repo"
     log "Pulling latest config repo"
@@ -202,7 +249,13 @@ install_my_configs() {
     copy_file "$REPO_DIR/basic/.zsh-custom" ".zsh-custom"
     copy_file "$REPO_DIR/basic/.zsh-only" ".zsh-only"
     copy_file "$REPO_DIR/basic/.zsh-zcomet" ".zsh-zcomet"
-    [[ "$COMMAND" != "update" || -n "$PREFIX" ]] && copy_file "$REPO_DIR/basic/.zsh-variables" ".zsh-variables"
+    if [[ "$COMMAND" != "update" || -n "$PREFIX" ]]; then
+        if [[ -f "$REPO_DIR/basic/.zsh-variables" ]]; then
+            copy_file "$REPO_DIR/basic/.zsh-variables" ".zsh-variables"
+        else
+            log "Skip optional .zsh-variables: not included in config repo"
+        fi
+    fi
 
     # 常用工具配置。
     copy_file "$REPO_DIR/tmux/.tmux.conf" ".tmux.conf"
@@ -233,9 +286,10 @@ install_fzf() {
 
 main() {
     parse_args "$@"
+    install_deps
+    ensure_config_repo
     [[ "$COMMAND" == "update" ]] && update_repo
 
-    install_deps
     install_oh_my_zsh
     install_my_configs
     install_fzf
